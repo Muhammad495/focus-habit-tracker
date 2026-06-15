@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Focus & Habit Tracker</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Screen 1: Home -->
+    <section id="screen-home" class="screen active">
+      <header class="header">
+        <h1 class="greeting" id="greeting">Привет!</h1>
+        <p class="subtitle">Сегодня отличный день для прогресса</p>
+      </header>
+
+      <div class="quick-stats" id="home-quick-stats">
+        <div class="stat-pill">
+          <span class="stat-pill__value" id="home-completed">0</span>
+          <span class="stat-pill__label">сегодня</span>
+        </div>
+        <div class="stat-pill">
+          <span class="stat-pill__value" id="home-streak">0</span>
+          <span class="stat-pill__label">🔥 streak</span>
+        </div>
+      </div>
+
+      <div class="section-title">Мои привычки</div>
+      <div id="home-habits-list" class="habits-list habits-list--compact"></div>
+      <div id="home-empty" class="empty-state hidden">
+        <span class="empty-state__icon">📝</span>
+        <p>Пока нет привычек</p>
+      </div>
+
+      <button class="btn btn--primary btn--full" id="btn-add-habit-home">
+        <span>+</span> Добавить привычку
+      </button>
+
+      <button class="btn btn--secondary btn--full" id="btn-go-timer">
+        <span>⏱</span> Открыть фокус-таймер
+      </button>
+    </section>
+
+    <!-- Screen 2: Habit Tracker -->
+    <section id="screen-habits" class="screen">
+      <header class="header">
+        <h1>Привычки</h1>
+        <p class="subtitle">Отмечай выполнение каждый день</p>
+      </header>
+
+      <div id="habits-list" class="habits-list"></div>
+      <div id="habits-empty" class="empty-state hidden">
+        <span class="empty-state__icon">🎯</span>
+        <p>Добавьте первую привычку</p>
+      </div>
+
+      <button class="btn btn--primary btn--full" id="btn-add-habit">
+        <span>+</span> Добавить привычку
+      </button>
+    </section>
+
+    <!-- Screen 3: Focus Timer -->
+    <section id="screen-timer" class="screen">
+      <header class="header header--center">
+        <h1>Фокус-таймер</h1>
+      </header>
+
+      <div class="mode-switch">
+        <button class="mode-btn active" data-mode="focus" id="mode-focus">Focus 25m</button>
+        <button class="mode-btn" data-mode="break" id="mode-break">Break 5m</button>
+      </div>
+
+      <div class="timer-display">
+        <div class="timer-ring">
+          <svg class="timer-ring__svg" viewBox="0 0 120 120">
+            <circle class="timer-ring__bg" cx="60" cy="60" r="54"></circle>
+            <circle class="timer-ring__progress" id="timer-progress" cx="60" cy="60" r="54"></circle>
+          </svg>
+          <div class="timer-time" id="timer-display">25:00</div>
+        </div>
+        <p class="timer-label" id="timer-label">Режим фокуса</p>
+      </div>
+
+      <div class="timer-controls">
+        <button class="btn btn--icon" id="btn-reset" title="Сброс">↺</button>
+        <button class="btn btn--primary btn--large" id="btn-start-pause">START</button>
+        <button class="btn btn--icon" id="btn-skip" title="Пропустить">⏭</button>
+      </div>
+    </section>
+
+    <!-- Screen 4: Statistics -->
+    <section id="screen-stats" class="screen">
+      <header class="header">
+        <h1>Статистика</h1>
+        <p class="subtitle">Ваш прогресс</p>
+      </header>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card__icon">✅</div>
+          <div class="stat-card__value" id="stat-completed-today">0</div>
+          <div class="stat-card__label">Выполнено сегодня</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">📋</div>
+          <div class="stat-card__value" id="stat-total-habits">0</div>
+          <div class="stat-card__label">Всего привычек</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">🔥</div>
+          <div class="stat-card__value" id="stat-total-streak">0</div>
+          <div class="stat-card__label">Общий streak</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card__icon">⏱</div>
+          <div class="stat-card__value" id="stat-focus-sessions">0</div>
+          <div class="stat-card__label">Фокус-сессий</div>
+        </div>
+      </div>
+
+      <div class="section-title">Лучшие streak</div>
+      <div id="top-streaks" class="top-streaks"></div>
+    </section>
+
+    <!-- Add Habit Modal -->
+    <div id="modal-overlay" class="modal-overlay hidden">
+      <div class="modal">
+        <h2 class="modal__title">Новая привычка</h2>
+        <input
+          type="text"
+          id="habit-input"
+          class="input"
+          placeholder="Например: спорт, читать, вода..."
+          maxlength="50"
+          autocomplete="off"
+        >
+        <div class="modal__actions">
+          <button class="btn btn--ghost" id="btn-modal-cancel">Отмена</button>
+          <button class="btn btn--primary" id="btn-modal-save">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-screen="home">
+        <span class="nav-item__icon">🏠</span>
+        <span class="nav-item__label">Home</span>
+      </button>
+      <button class="nav-item" data-screen="habits">
+        <span class="nav-item__icon">✅</span>
+        <span class="nav-item__label">Привычки</span>
+      </button>
+      <button class="nav-item" data-screen="timer">
+        <span class="nav-item__icon">⏱</span>
+        <span class="nav-item__label">Таймер</span>
+      </button>
+      <button class="nav-item" data-screen="stats">
+        <span class="nav-item__icon">📊</span>
+        <span class="nav-item__label">Статистика</span>
+      </button>
+    </nav>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
